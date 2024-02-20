@@ -1,8 +1,10 @@
 const express = require("express")
 const app = express()
-const {getTopics} = require("./controller")
+const {getTopics, getApi} = require("./controller")
 
 app.get("/api/topics", getTopics)
+
+app.get("/api", getApi)
 
 app.all("/api/*", (request, response, next)=>{
     response.status(404).send({msg:"Not found!"})

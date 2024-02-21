@@ -54,6 +54,24 @@ describe("nc_news",()=>{
                 expect(response.body.article.article_id).toBe(2)
             })
         })
+        test("Returns an article object with properties article_id, title, topic, author, body, created_at, votes and article_img_url", ()=>{
+            return request(app)
+            .get("/api/articles/2")
+            .expect(200)
+            .then((response)=>{
+                const objectArticle = response.body.article
+                    expect(objectArticle).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String)
+                    })
+            })
+        })
         test("Should respond with error if given article id is an invalid type (not a number)", ()=>{
             return request(app)
             .get("/api/articles/invalidtype")
@@ -61,6 +79,47 @@ describe("nc_news",()=>{
             .then((response)=>{
                 const error = response.body
                 expect(error.msg).toBe("Bad request")
+            })
+        })
+    })
+    describe("GET /api/articles", ()=>{
+        test("Status: 200 returns array of article objects with its properties sorted by date desc and not include body property", ()=>{
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response)=>{
+                const arrayOfArticles = response.body
+                arrayOfArticles.forEach((article)=>{
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(String)
+                    })
+                })
+            })
+        })
+        test("Array of objects is sorted by created_at in descending order", ()=>{
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response)=>{
+                const arrayOfArticles = response.body
+                expect(arrayOfArticles).toBeSortedBy("created_at", {
+                    descending: true,
+                })
+            })
+        })
+        test("Status:404 when passing an invalid endpoint for api/articles", ()=>{
+            return request(app)
+            .get("/api/articlesendpointnotvalid")
+            .expect(404)
+            .then((response)=>{
+                expect(response.body.msg).toBe("Not found!")
             })
         })
     })

@@ -1,6 +1,5 @@
-const { allTopics, getApi, selectArticleById} = require("./model");
+const { allTopics, getApi, selectArticleById, arrayOfArticles} = require("./model");
 const endPoints = require("./endpoints.json");
-const { response } = require("./app");
 
 exports.getTopics = (request, response, next) => {
   allTopics()
@@ -25,5 +24,13 @@ exports.getArticleById = (request, response, next) => {
     .catch((err)=>{
         next(err)
     })
+}
+exports.getArrOfArticles = (request, response, next) => {
 
+    arrayOfArticles().then((articles)=>{
+        response.status(200).send(articles)
+    })
+    .catch((err)=>{
+        next(err)
+    })
 }

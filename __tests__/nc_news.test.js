@@ -45,4 +45,23 @@ describe("nc_news",()=>{
             })
         })
     })
+    describe("GET /api/articles/:article_id",()=>{
+        test("Status 200: returrns an article object requested by its id with its corresponding properties",()=>{
+            return request(app)
+            .get("/api/articles/2")
+            .expect(200)
+            .then((response)=>{
+                expect(response.body.article.article_id).toBe(2)
+            })
+        })
+        test("Should respond with error if given article id is an invalid type (not a number)", ()=>{
+            return request(app)
+            .get("/api/articles/invalidtype")
+            .expect(400)
+            .then((response)=>{
+                const error = response.body
+                expect(error.msg).toBe("Bad request")
+            })
+        })
+    })
 })

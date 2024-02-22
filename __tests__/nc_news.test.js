@@ -3,7 +3,8 @@ const request = require("supertest");
 const db = require('../db/connection.js');
 const testData = require('../db/data/test-data/index.js');
 const seed = require('../db/seeds/seed.js');
-const endPoints = require("../endpoints.json")
+const endPoints = require("../endpoints.json");
+const comments = require("../db/data/test-data/comments.js");
 
 beforeEach(() => seed (testData));
 afterAll(() => db.end());
@@ -98,8 +99,9 @@ describe("nc_news",()=>{
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
-                        comment_count: expect.any(String)
+                        comment_count: expect.any(Number)
                     })
+                    expect(Object.prototype.hasOwnProperty.call(article, "body")).toBe(false)
                 })
             })
         })
@@ -120,6 +122,47 @@ describe("nc_news",()=>{
             .expect(404)
             .then((response)=>{
                 expect(response.body.msg).toBe("Not found!")
+            })
+        })
+    })
+    describe("GET /api/articles/:article_id/comments", ()=>{
+        test("Status: 200 returning an array of comments for the given article_id having the following properties: comment_id, votes, created_at, author, body, article_id", ()=>{
+            return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then((response)=>{
+                const arrayOfComments = response.body
+                arrayOfComments.forEach((comment)=>{
+                    expect(comment).toMatchObject({
+                        comment_id: expect.any(Number),
+                        body: expect.any(String),
+                        article_id: 1,
+                        author: expect.any(String),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String)
+                    })
+                })            
+            
+            })
+        })
+        test("Array of comments is sorted by created_at in descending order", ()=>{
+            return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then((response)=>{
+                const arrayOfComments = response.body
+                expect(arrayOfComments).toBeSortedBy("created_at", {
+                    descending: true,
+                })
+            })
+        })
+        test("Should respond with error of bad request if given an invalid id", ()=>{
+            return request(app)
+            .get("/api/articles/idisinvalid/comments")
+            .expect(400)
+            .then((response)=>{
+                const error = response.body
+                expect(error.msg).toBe("Bad request")
             })
         })
     })

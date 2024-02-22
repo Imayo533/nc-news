@@ -1,4 +1,4 @@
-const { allTopics, getApi, selectArticleById, arrayOfArticles} = require("./model");
+const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId} = require("./model");
 const endPoints = require("./endpoints.json");
 
 exports.getTopics = (request, response, next) => {
@@ -29,6 +29,15 @@ exports.getArrOfArticles = (request, response, next) => {
 
     arrayOfArticles().then((articles)=>{
         response.status(200).send(articles)
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
+exports.getCommentsByArtId = (request, response, next) => {
+    const {article_id} = request.params
+    arrCommentsByArtId(article_id).then((array)=>{
+        response.status(200).send(array)
     })
     .catch((err)=>{
         next(err)

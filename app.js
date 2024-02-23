@@ -21,6 +21,7 @@ app.use((err, request, response, next)=>{
     if(err){
     response.status(400).send({msg: "Bad request"})
     }
+    next()
 })
 
 app.use((err, request, response, next)=>{

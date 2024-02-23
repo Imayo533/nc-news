@@ -21,7 +21,11 @@ exports.arrayOfArticles = () => {
 }
 exports.arrCommentsByArtId = (article_id) => {
     return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`, [article_id])
-    .then((result)=>{
+    .then((result)=>{  
+    
+        if(result.rows.length===0){
+            return []
+        }
         return result.rows
     })  
 }

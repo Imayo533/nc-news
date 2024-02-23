@@ -156,6 +156,16 @@ describe("nc_news",()=>{
                 })
             })
         })
+        test("Array of comments is sorted by created_at in descending order", ()=>{
+            return request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then((response)=>{
+                const arrayOfComments = response.body
+
+                expect(arrayOfComments).toEqual([])
+            })
+        })
         test("Should respond with error of bad request if given an invalid id", ()=>{
             return request(app)
             .get("/api/articles/idisinvalid/comments")
@@ -165,5 +175,6 @@ describe("nc_news",()=>{
                 expect(error.msg).toBe("Bad request")
             })
         })
+        
     })
 })

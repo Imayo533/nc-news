@@ -1,12 +1,15 @@
-const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId} = require("./model");
+const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId, addComment, updateArticleVote} = require("./model");
 const endPoints = require("./endpoints.json");
+const { response } = require("./app");
 
 exports.getTopics = (request, response, next) => {
   allTopics()
     .then((topics) => {
+    
       response.status(200).send({ topics });
     })
     .catch((err) => {
+        
       next(err);
     });
 };
@@ -41,5 +44,29 @@ exports.getCommentsByArtId = (request, response, next) => {
     })
     .catch((err)=>{
         next(err)
+    })
+}
+exports.postComment = (request, response, next) => {
+    const article_id = request.params.article_id
+    selectArticleById(article_id)
+    .then(()=>{
+        addComment(article_id, request.body)
+        .then((result)=>{
+            response.status(201).send(result)
+        })
+        .catch((err)=>{
+            console.log(err, "error from controller<<<<<<<<<<")
+            next(err)
+        })
+    })
+}
+exports.patchVote = (request, response, next) => {
+    const {article_id} = request.params
+    const {inc_votes} = request.body
+
+   
+    updateArticleVote(article_id, inc_votes)
+    .then((updatedArticle)=>{
+        response.status(200).send({updatedArticle})
     })
 }

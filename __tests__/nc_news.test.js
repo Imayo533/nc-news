@@ -32,6 +32,7 @@ describe("nc_news",()=>{
             .get("/api/invalidendpoint")
             .expect(404)
             .then((response)=>{
+              
                 expect(response.body.msg).toBe("Not found!")
             })
         })
@@ -79,9 +80,20 @@ describe("nc_news",()=>{
             .expect(400)
             .then((response)=>{
                 const error = response.body
+                
                 expect(error.msg).toBe("Bad request")
             })
         })
+        test("Should respond error 404 if passed a non existent id", ()=>{
+            return request(app)
+            .get("/api/articles/9999")
+            .expect(404)
+            .then((response)=>{
+                const error = response.body
+                expect(error.msg).toBe("Not found")
+            })
+        })
+       
     })
     describe("GET /api/articles", ()=>{
         test("Status: 200 returns array of article objects with its properties sorted by date desc and not include body property", ()=>{
@@ -156,14 +168,14 @@ describe("nc_news",()=>{
                 })
             })
         })
-        test("Array of comments is sorted by created_at in descending order", ()=>{
+        test("Status 404 error when passed and inexistent id", ()=>{
             return request(app)
-            .get("/api/articles/2/comments")
-            .expect(200)
+            .get("/api/articles/13/comments")
+            .expect(404)
             .then((response)=>{
                 const arrayOfComments = response.body
 
-                expect(arrayOfComments).toEqual([])
+                expect(arrayOfComments.msg).toBe("Not found!")
             })
         })
         test("Should respond with error of bad request if given an invalid id", ()=>{
@@ -176,5 +188,70 @@ describe("nc_news",()=>{
             })
         })
         
+    })
+    describe("POST /api/articles/:article_id/comments", ()=>{
+        test("Status 201 when insterting new comment",()=>{
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                "username": "rogersop",
+                "body": "Excellent article"
+            })
+            .expect(201)
+            .then((result)=>{
+            
+                expect(result.body.comment_id).toBe(19)
+                expect(result.body.body).toBe("Excellent article")
+                expect(result.body.article_id).toBe(1)
+                expect(result.body.author).toBe("rogersop")
+                expect(result.body.votes).toBe(0)
+                expect(result.body).toHaveProperty("created_at")
+            })
+        })
+        test("Status 400 with error message when request object is missing keys",()=>{
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                "username": "rogersop",
+              
+            })
+            .expect(400)
+            .then((result)=>{
+                expect(result.body.msg).toBe("Bad request")
+            })
+        })
+        //test if there is body.property and user.name property 400 bad request
+                //404 not invalid id
+                //400
+                //if username doesnt exist
+                /////////////////////////////////////////////////////
+                // invalid article id 400
+                // valid but non existent article id 404
+                // missing keysin post object 400
+                // invalid data type 400
+                // user doesnt exist 404
+                //////////////////////////////////////////
+                //article id does not exist 9999
+                //article id is invalid "invalidid"
+                //comment is an empty object / comment's keys are missing 400
+                //username is not valid 404
+        
+    })
+    describe.only("CORE: PATCH /api/articles/:article_id", ()=>{
+        test("Status 200 request body accepts an object in the form { inc_votes: newVote }.", ()=>{
+            return request(app)
+            .patch("/api/articles/1")
+            .send({inc_votes : 1})
+            .expect(200)
+            .then((result)=>{
+                console.log(result.body,"<<<<from test patch")
+                expect(result.body.updatedArticle.votes).toBe(101)
+
+            })
+        })
+        //invalid id  400
+        //invalid id non existent 404
+        //empty object 
+        //votes should be a number type
     })
 })

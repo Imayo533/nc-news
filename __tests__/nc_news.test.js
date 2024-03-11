@@ -313,7 +313,7 @@ describe("nc_news", () => {
         .del("/api/comments/1")
         .expect(204)
         .then((result) => {
-          console.log(result.body, "from test<<<<<<<<<<<<");
+        
           expect(result.body).toEqual({});
         });
     });

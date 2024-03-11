@@ -86,6 +86,6 @@ exports.deleteComment = (request, response, next) => {
         response.sendStatus(204)
     })
     .catch((err)=>{
-        console.log(err, "err from controller<<<<<<<<<<")
+        next(err)
     })
 }

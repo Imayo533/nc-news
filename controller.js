@@ -1,4 +1,4 @@
-const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId, addComment, updateArticleVote} = require("./model");
+const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId, addComment, updateArticleVote, deleteCommentById} = require("./model");
 const endPoints = require("./endpoints.json");
 const { response } = require("./app");
 
@@ -47,17 +47,23 @@ exports.getCommentsByArtId = (request, response, next) => {
     })
 }
 exports.postComment = (request, response, next) => {
+    
     const article_id = request.params.article_id
     selectArticleById(article_id)
+        
     .then(()=>{
         addComment(article_id, request.body)
+       
         .then((result)=>{
+         
             response.status(201).send(result)
         })
-        .catch((err)=>{
-            console.log(err, "error from controller<<<<<<<<<<")
+        .catch((err)=>{  
             next(err)
         })
+    })
+    .catch((err)=>{
+        next(err)
     })
 }
 exports.patchVote = (request, response, next) => {
@@ -68,5 +74,18 @@ exports.patchVote = (request, response, next) => {
     updateArticleVote(article_id, inc_votes)
     .then((updatedArticle)=>{
         response.status(200).send({updatedArticle})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
+exports.deleteComment = (request, response, next) => {
+    const {comment_id} = request.params
+    deleteCommentById(comment_id)
+    .then(()=>{
+        response.sendStatus(204)
+    })
+    .catch((err)=>{
+        console.log(err, "err from controller<<<<<<<<<<")
     })
 }

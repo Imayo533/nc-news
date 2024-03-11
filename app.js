@@ -1,6 +1,6 @@
 const express = require("express")
 const app = express()
-const {getTopics, getApi, getArticleById, getArrOfArticles, getCommentsByArtId, postComment, patchVote} = require("./controller")
+const {getTopics, getApi, getArticleById, getArrOfArticles, getCommentsByArtId, postComment, patchVote, deleteComment} = require("./controller")
 app.use(express.json());
 
 app.get("/api/topics", getTopics)
@@ -17,11 +17,15 @@ app.post("/api/articles/:article_id/comments", postComment)
 
 app.patch("/api/articles/:article_id", patchVote)
 
-app.use((err, request, response, next)=>{
+app.delete("/api/comments/:comment_id", deleteComment)
 
+app.use((err, request, response, next)=>{
+   
+   
     if(err.status && err.msg){
-               
+
     response.status(err.status).send({msg: err.msg})
+
     }
     else if(err.code === '22P02' || err.code === '23502'){
         
@@ -31,6 +35,7 @@ app.use((err, request, response, next)=>{
 })
 
 app.all("/api/*", (request, response, next)=>{
+    
     response.status(404).send({msg:"Not found!"})
     next()
 })

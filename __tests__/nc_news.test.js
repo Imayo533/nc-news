@@ -313,8 +313,34 @@ describe("nc_news", () => {
         .del("/api/comments/1")
         .expect(204)
         .then((result) => {
-        
           expect(result.body).toEqual({});
+        });
+    });
+  });
+  describe("CORE Get/api/users", () => {
+    test("Status 200 returning array of objects that should have the properties of username, name and avatar_url", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { users } = body;
+          expect(users).toBeInstanceOf(Array);
+          expect(users).toHaveLength(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String)
+            });
+          });
+        });
+    });
+    test("Status:404 when passing an invalid endpoint for api/users", () => {
+      return request(app)
+        .get("/api/invalidendpoint")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not found!");
         });
     });
   });

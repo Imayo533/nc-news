@@ -1,4 +1,4 @@
-const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId, addComment, updateArticleVote, deleteCommentById} = require("./model");
+const { allTopics, getApi, selectArticleById, arrayOfArticles, arrCommentsByArtId, addComment, updateArticleVote, deleteCommentById, allUsers} = require("./model");
 const endPoints = require("./endpoints.json");
 const { response } = require("./app");
 
@@ -89,3 +89,14 @@ exports.deleteComment = (request, response, next) => {
         next(err)
     })
 }
+exports.getUsers = (request, response, next) => {
+    allUsers()
+      .then((users) => {
+      
+        response.status(200).send({ users });
+      })
+      .catch((err) => {
+          
+        next(err);
+      });
+  };

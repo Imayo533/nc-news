@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
 const cors = require('cors');
-const {getTopics, getApi, getArticleById, getArrOfArticles, getCommentsByArtId, postComment, patchVote, deleteComment} = require("./controller")
+const {getTopics, getApi, getArticleById, getArrOfArticles, getCommentsByArtId, postComment, patchVote, deleteComment, getUsers} = require("./controller")
 app.use(cors());
 app.use(express.json());
 
@@ -20,6 +20,8 @@ app.post("/api/articles/:article_id/comments", postComment)
 app.patch("/api/articles/:article_id", patchVote)
 
 app.delete("/api/comments/:comment_id", deleteComment)
+
+app.get("/api/users", getUsers)
 
 app.use((err, request, response, next)=>{
    

@@ -65,10 +65,14 @@ exports.deleteCommentById = (comment_id) => {
    return db.query(
     `DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [comment_id]
    )
-//    .then((result)=>{
-//     console.log(result,"<<<<result from model")
-//     return result.rows[0]
-//    })
 }
+exports.allUsers = () => {
+    let arrayOfUsers = `SELECT * FROM users`
+    return db.query(arrayOfUsers).then((result)=>{
+     
+        return result.rows
+    })
+}
+
 
 

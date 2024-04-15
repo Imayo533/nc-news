@@ -128,12 +128,31 @@ describe("nc_news", () => {
           });
         });
     });
+    test("Status 200: filter article by topic", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.length).toBe(1);
+          response.body.forEach((article)=>{
+            expect(article.topic).toBe("cats")
+          })
+        });
+    });
     test("Status:404 when passing an invalid endpoint for api/articles", () => {
       return request(app)
         .get("/api/articlesendpointnotvalid")
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("Not found!");
+        });
+    });
+    test("GET:400, invalid filter query", () => {
+      return request(app)
+        .get("/api/articles?topic=999")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid filter query");
         });
     });
   });

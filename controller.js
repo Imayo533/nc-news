@@ -29,9 +29,12 @@ exports.getArticleById = (request, response, next) => {
     })
 }
 exports.getArrOfArticles = (request, response, next) => {
+    const{sort_by, order, topic}=request.query
 
-    arrayOfArticles().then((articles)=>{
-        response.status(200).send(articles)
+    arrayOfArticles(sort_by, order, topic).then((articles)=>{
+        if(articles.length === 0){
+            response.status(200).send({msg: "No articles with this topic yet!"})
+        } else response.status(200).send(articles)
     })
     .catch((err)=>{
         next(err)
